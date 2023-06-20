@@ -80,44 +80,44 @@ async function main() {
 	await queries.balanceCheckerFcn(aliceId, tokenId, client);
 	await queries.balanceCheckerFcn(bobId, tokenId, client);
 
-	// STEP 3 ===================================
-	console.log(`\nSTEP 3 ===================================\n`);
-	console.log(`- Alice performing allowance transfer from Treasury to Bob...\n`);
+	// // STEP 3 ===================================
+	// console.log(`\nSTEP 3 ===================================\n`);
+	// console.log(`- Alice performing allowance transfer from Treasury to Bob...\n`);
 
-	const allowanceSendFtParams = new ContractFunctionParameters()
-		.addAddress(tokenAddressSol)
-		.addAddress(treasuryId.toSolidityAddress())
-		.addAddress(bobId.toSolidityAddress())
-		.addUint256(10);
+	// const allowanceSendFtParams = new ContractFunctionParameters()
+	// 	.addAddress(tokenAddressSol)
+	// 	.addAddress(treasuryId.toSolidityAddress())
+	// 	.addAddress(bobId.toSolidityAddress())
+	// 	.addUint256(10);
 
-	client.setOperator(aliceId, aliceKey);
-	const allowanceSendFtRec = await contracts.executeContractFcn(contractId, "ftTransferApproved", allowanceSendFtParams, gasLim, client);
-	client.setOperator(operatorId, operatorKey);
-	console.log(`- Contract call for approved FT transfer: ${allowanceSendFtRec.receipt.status}`);
+	// client.setOperator(aliceId, aliceKey);
+	// const allowanceSendFtRec = await contracts.executeContractFcn(contractId, "ftTransferApproved", allowanceSendFtParams, gasLim, client);
+	// client.setOperator(operatorId, operatorKey);
+	// console.log(`- Contract call for approved FT transfer: ${allowanceSendFtRec.receipt.status}`);
 
-	const [allowanceSendFtInfo, allowanceSendFtExpUrl] = await queries.mirrorTxQueryFcn(allowanceSendFtRec.transactionId);
-	console.log(`- See details: ${allowanceSendFtExpUrl} \n`);
+	// const [allowanceSendFtInfo, allowanceSendFtExpUrl] = await queries.mirrorTxQueryFcn(allowanceSendFtRec.transactionId);
+	// console.log(`- See details: ${allowanceSendFtExpUrl} \n`);
 
-	await queries.balanceCheckerFcn(treasuryId, tokenId, client);
-	await queries.balanceCheckerFcn(aliceId, tokenId, client);
-	await queries.balanceCheckerFcn(bobId, tokenId, client);
+	// await queries.balanceCheckerFcn(treasuryId, tokenId, client);
+	// await queries.balanceCheckerFcn(aliceId, tokenId, client);
+	// await queries.balanceCheckerFcn(bobId, tokenId, client);
 
-	// STEP 4 ===================================
-	console.log(`\nSTEP 4 ===================================\n`);
-	console.log(`- Treasury deleting fungible token allowance for Alice...\n`);
+	// // STEP 4 ===================================
+	// console.log(`\nSTEP 4 ===================================\n`);
+	// console.log(`- Treasury deleting fungible token allowance for Alice...\n`);
 
-	allowBal = 0;
-	const allowanceDeleteFtParams = new ContractFunctionParameters()
-		.addAddress(tokenAddressSol)
-		.addAddress(aliceId.toSolidityAddress())
-		.addUint256(allowBal);
+	// allowBal = 0;
+	// const allowanceDeleteFtParams = new ContractFunctionParameters()
+	// 	.addAddress(tokenAddressSol)
+	// 	.addAddress(aliceId.toSolidityAddress())
+	// 	.addUint256(allowBal);
 
-	client.setOperator(treasuryId, treasuryKey);
-	const allowanceDeleteFtRec = await contracts.executeContractFcn(contractId, "approveFt", allowanceDeleteFtParams, gasLim, client);
-	client.setOperator(operatorId, operatorKey);
+	// client.setOperator(treasuryId, treasuryKey);
+	// const allowanceDeleteFtRec = await contracts.executeContractFcn(contractId, "approveFt", allowanceDeleteFtParams, gasLim, client);
+	// client.setOperator(operatorId, operatorKey);
 
-	console.log(`- Contract call for FT allowance deletion: ${allowanceDeleteFtRec.receipt.status}`);
-	console.log(`- See details: https://testnet.mirrornode.hedera.com/api/v1/accounts/${treasuryId}/allowances/tokens`);
+	// console.log(`- Contract call for FT allowance deletion: ${allowanceDeleteFtRec.receipt.status}`);
+	// console.log(`- See details: https://testnet.mirrornode.hedera.com/api/v1/accounts/${treasuryId}/allowances/tokens`);
 
 	console.log(`
 ====================================================
