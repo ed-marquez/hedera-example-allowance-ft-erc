@@ -40,16 +40,9 @@ async function main() {
 	console.log(`- Token ID in Solidity format: ${tokenAddressSol}`);
 	console.log(`- Initial token supply: ${tokenInfo.totalSupply.low}`);
 
-	// Association between token and Alice
-	const tokenAssociateTx = new TokenAssociateTransaction().setAccountId(aliceId).setTokenIds([tokenId]).freezeWith(client);
-	const tokenAssociateSign = await tokenAssociateTx.sign(aliceKey);
-	const tokenAssociateSubmit = await tokenAssociateSign.execute(client);
-	const tokenAssociateRx = await tokenAssociateSubmit.getReceipt(client);
-	console.log(`\n- Token association status: ${tokenAssociateRx.status}`);
-
 	// Contract
 	// Import the compiled contract bytecode
-	const bytecode = fs.readFileSync("./bytecode.bin");
+	const bytecode = fs.readFileSync("./binaries/HIP-719.bin");
 	let gasLim = 100000;
 	const [contractId, contractAddress] = await contracts.deployContractFcn(bytecode, gasLim, client);
 	console.log(`\n- Contract ID: ${contractId}`);
@@ -60,16 +53,12 @@ async function main() {
 	console.log(`- Treasury approving fungible token allowance for Alice...\n`);
 
 	gasLim = 4000000;
-	let allowBal = 50;
-	const allowanceApproveFtParams = new ContractFunctionParameters()
-		.addAddress(tokenAddressSol)
-		.addAddress(aliceId.toSolidityAddress())
-		.addUint256(allowBal);
+	const allowanceApproveFtParams = new ContractFunctionParameters().addAddress(tokenAddressSol);
 
-	client.setOperator(treasuryId, treasuryKey);
-	const allowanceApproveFtRec = await contracts.executeContractFcn(contractId, "approve", allowanceApproveFtParams, gasLim, client);
+	client.setOperator(aliceId, aliceKey);
+	const allowanceApproveFtRec = await contracts.executeContractFcn(contractId, "associate", allowanceApproveFtParams, gasLim, client);
 	client.setOperator(operatorId, operatorKey);
-	console.log(`- Contract call for FT allowance approval: ${allowanceApproveFtRec.receipt.status}`);
+	console.log(`- Contract call for token association: ${allowanceApproveFtRec.receipt.status}`);
 
 	// const recQuery = await queries.txRecQueryFcn(allowanceApproveFtRec.transactionId, client);
 
