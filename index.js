@@ -63,7 +63,7 @@ async function main() {
 	let allowBal = 50;
 	const allowanceApproveFtParams = new ContractFunctionParameters()
 		.addAddress(tokenAddressSol)
-		.addAddress(treasuryId.toSolidityAddress())
+		.addAddress(aliceId.toSolidityAddress())
 		.addUint256(allowBal);
 
 	client.setOperator(treasuryId, treasuryKey);
