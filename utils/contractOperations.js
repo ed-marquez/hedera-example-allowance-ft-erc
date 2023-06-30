@@ -15,3 +15,10 @@ export async function executeContractFcn(cId, fcnName, params, gasLim, client) {
 	const contractExecuteRec = await contractExecuteSubmit.getRecord(client);
 	return contractExecuteRec;
 }
+
+export async function callContractFcn(cId, fcnName, params, gasLim, client) {
+	const contractCallTx = new ContractCallQuery().setContractId(cId).setGas(gasLim).setFunction(fcnName, params);
+	const contractCallSubmit = await contractCallTx.execute(client);
+	const contractCallInfo = contractCallSubmit.getUint256(0);
+	return contractCallInfo;
+}
