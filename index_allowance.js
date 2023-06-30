@@ -66,10 +66,6 @@ async function main() {
 	
 	client.setOperator(operatorId, operatorKey);
 
-	const allowanceInfoFtParams = new ContractFunctionParameters().addAddress(treasuryId.toSolidityAddress()).addAddress(aliceId.toSolidityAddress());
-	const allowanceApproveInfo = await contracts.callContractFcn(contractId, "allowance", allowanceInfoFtParams, gasLim, client);
-	console.log(`- Contract call for FT allowance info: ${allowanceApproveInfo}`);
-
 	// STEP 3 ===================================
 	console.log(`\nSTEP 3 ===================================\n`);
 	console.log(`- Alice performing allowance transfer from Treasury to Bob...\n`);
@@ -90,6 +86,11 @@ async function main() {
 	await queries.balanceCheckerFcn(treasuryId, tokenId, client);
 	await queries.balanceCheckerFcn(aliceId, tokenId, client);
 	await queries.balanceCheckerFcn(bobId, tokenId, client);
+
+	const allowanceInfoFtParams = new ContractFunctionParameters().addAddress(treasuryId.toSolidityAddress()).addAddress(aliceId.toSolidityAddress());
+	const allowanceApproveInfo = await contracts.callContractFcn(contractId, "allowance", allowanceInfoFtParams, gasLim, client);
+	console.log(`- Contract call for FT allowance info: ${allowanceApproveInfo}`);
+
 
 	// // STEP 4 ===================================
 	// console.log(`\nSTEP 4 ===================================\n`);
