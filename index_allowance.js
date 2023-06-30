@@ -15,6 +15,7 @@ const operatorKey = PrivateKey.fromString(process.env.OPERATOR_PVKEY);
 const network = process.env.NETWORK;
 const client = Client.forNetwork(network).setOperator(operatorId, operatorKey);
 client.setDefaultMaxTransactionFee(new Hbar(100));
+client.setMaxQueryPayment(new Hbar(100));
 
 async function main() {
 	// STEP 1 ===================================
@@ -50,18 +51,24 @@ async function main() {
 
 	let allowBal = 50;
 	const allowanceApproveFtParams = new ContractFunctionParameters().addAddress(aliceId.toSolidityAddress()).addUint256(allowBal);
-
+	
 	client.setOperator(treasuryId, treasuryKey);
 	const allowanceApproveFtRec = await contracts.executeContractFcn(contractId, "approve", allowanceApproveFtParams, gasLim, client);
 	client.setOperator(operatorId, operatorKey);
 	console.log(`- Contract call for FT allowance approval: ${allowanceApproveFtRec.receipt.status}`);
-
+	
 	const [allowanceApproveFtInfo, allowanceApproveFtExpUrl] = await queries.mirrorTxQueryFcn(allowanceApproveFtRec.transactionId);
 	console.log(`- See details: ${allowanceApproveFtExpUrl} \n`);
-
+	
 	await queries.balanceCheckerFcn(treasuryId, tokenId, client);
 	await queries.balanceCheckerFcn(aliceId, tokenId, client);
 	await queries.balanceCheckerFcn(bobId, tokenId, client);
+	
+	client.setOperator(operatorId, operatorKey);
+
+	const allowanceInfoFtParams = new ContractFunctionParameters().addAddress(treasuryId.toSolidityAddress()).addAddress(aliceId.toSolidityAddress());
+	const allowanceApproveInfo = await contracts.callContractFcn(contractId, "allowance", allowanceInfoFtParams, gasLim, client);
+	console.log(`- Contract call for FT allowance info: ${allowanceApproveInfo}`);
 
 	// STEP 3 ===================================
 	console.log(`\nSTEP 3 ===================================\n`);
@@ -75,7 +82,7 @@ async function main() {
 	client.setOperator(aliceId, aliceKey);
 	const allowanceSendFtRec = await contracts.executeContractFcn(contractId, "transferFrom", allowanceSendFtParams, gasLim, client);
 	client.setOperator(operatorId, operatorKey);
-	console.log(`- Contract call for approved FT transfer: ${allowanceSendFtRec.receipt.status}`);
+	console.log(`\n- Contract call for approved FT transfer: ${allowanceSendFtRec.receipt.status}`);
 
 	const [allowanceSendFtInfo, allowanceSendFtExpUrl] = await queries.mirrorTxQueryFcn(allowanceSendFtRec.transactionId);
 	console.log(`- See details: ${allowanceSendFtExpUrl} \n`);
